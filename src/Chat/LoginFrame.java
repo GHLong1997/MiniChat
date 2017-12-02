@@ -150,7 +150,7 @@ public class LoginFrame extends javax.swing.JFrame {
             if (r.content.equalsIgnoreCase("ok")){
                 
                 USER_NAME = username;
-                ChatFrame1 chatFrame = new ChatFrame1();
+                ChatFrame chatFrame = new ChatFrame();
                 chatFrame.setVisible(true);
                 this.setVisible(false);
             }

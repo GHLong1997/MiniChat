@@ -5,19 +5,73 @@
  */
 package Chat;
 
+import static Chat.ChatFrame1.CURRENT_USER;
+import java.util.ArrayList;
+import java.util.HashMap;
+import javax.swing.DefaultListModel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import org.codehaus.jackson.map.ObjectMapper;
+
 /**
  *
  * @author vtahu
  */
 public class ChatFrame extends javax.swing.JFrame {
 
-    /**
-     * Creates new form ChatFrame
-     */
+     public String content="";
+    public static String CURRENT_USER;
+    final private DefaultListModel<String> friendListModel;
+    final private HashMap<String,String> mapChatContent;
     public ChatFrame() {
+           this.setResizable(false);
+      
+        friendListModel = new DefaultListModel<>();
+        mapChatContent = new HashMap<>();
         initComponents();
-        lblUsername.setText(LoginFrame.USER_NAME);
+        lstFriends.setModel(friendListModel);
+        CURRENT_USER = LoginFrame.USER_NAME;
+        lblUsername.setText(CURRENT_USER);
+        getAndDisplayUser();
+          
+//         String aa="Hôm nay <font color=red>tôi</font> <br><font color = white style=\"background-color: blue\">đi học</font></br> ";
+//           
+       txtChatContent1.setContentType("text/html");
+//      txtChatContent1.setText(aa); 
     }
+    
+      
+    
+      private void getAndDisplayUser(){
+        try{
+           
+            MyMessage m = new MyMessage();
+            m.sender = CURRENT_USER;
+            m.receiver = "server";
+            m.type = "getusers";
+            ChatClient client = new ChatClient();
+            MyMessage r = client.sendMessage(m);
+            ObjectMapper mapper = new ObjectMapper();
+            ArrayList<String> b = mapper.readValue(r.content, ArrayList.class);
+            for (int i=0; i<b.size(); i++){
+                String s = b.get(i);
+                friendListModel.addElement(s);
+                mapChatContent.put(s, "");
+                if (i==0){
+                    lblReceiver.setText(s);
+                    //txtChatContent = txtChatContentTemp;
+                }
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+    }   
+      
+       
+    
+      
+      
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -31,15 +85,17 @@ public class ChatFrame extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList<>();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        lstFriends = new javax.swing.JList<>();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        txtChat = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
         lblUsername = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
+        lblReceiver = new javax.swing.JLabel();
+        jButton3 = new javax.swing.JButton();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        txtChatContent1 = new javax.swing.JEditorPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
@@ -50,16 +106,17 @@ public class ChatFrame extends javax.swing.JFrame {
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel2.setText("Group");
 
-        jList1.setModel(new javax.swing.AbstractListModel<String>() {
+        lstFriends.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
-        jScrollPane1.setViewportView(jList1);
-
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane2.setViewportView(jTextArea1);
+        lstFriends.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                lstFriendsValueChanged(evt);
+            }
+        });
+        jScrollPane1.setViewportView(lstFriends);
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel3.setText("Conversation");
@@ -69,12 +126,28 @@ public class ChatFrame extends javax.swing.JFrame {
 
         jButton1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton1.setText("Send");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         lblUsername.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         lblUsername.setText("user");
 
         jButton2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton2.setText("Logout");
+
+        lblReceiver.setText("jLabel5");
+
+        jButton3.setText("Receive ");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
+        jScrollPane3.setViewportView(txtChatContent1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -92,27 +165,29 @@ public class ChatFrame extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 317, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())
+                        .addComponent(txtChat, javax.swing.GroupLayout.PREFERRED_SIZE, 251, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton3))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(29, 29, 29)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addGap(136, 136, 136))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 349, Short.MAX_VALUE)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel1)
+                                        .addGap(0, 0, Short.MAX_VALUE))
                                     .addGroup(layout.createSequentialGroup()
                                         .addGap(0, 0, Short.MAX_VALUE)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(lblUsername, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                                .addGap(30, 30, 30))))))
+                                        .addComponent(lblUsername, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(30, 30, 30))
+                            .addComponent(lblReceiver)
+                            .addComponent(jScrollPane3))))
+                .addGap(30, 30, 30))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -126,26 +201,90 @@ public class ChatFrame extends javax.swing.JFrame {
                 .addGap(34, 34, 34)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(jLabel3))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane2)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 177, Short.MAX_VALUE))
+                    .addComponent(jLabel3)
+                    .addComponent(lblReceiver))
                 .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 177, Short.MAX_VALUE)
+                    .addComponent(jScrollPane3))
+                .addGap(18, 20, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(32, 32, 32))
+                    .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(txtChat, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(30, 30, 30))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void lstFriendsValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_lstFriendsValueChanged
+          String s = lblReceiver.getText();
+        String content1 = txtChatContent1.getText();
+         
+        mapChatContent.put(s, content1);
+       
+        if (!evt.getValueIsAdjusting()){
+           
+            JList source = (JList)evt.getSource();
+            String selected = source.getSelectedValue().toString();
+            lblReceiver.setText(selected);
+            content1 = mapChatContent.get(selected);
+            txtChatContent1.setText(content1);
+        }
+    }//GEN-LAST:event_lstFriendsValueChanged
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+          String s = txtChat.getText().trim();
+        if (s.length() > 0){
+            content += "<font color=blue >" +CURRENT_USER + " : " + s+"</font></br><br>" ;
+            txtChatContent1.setText(content);
+            txtChat.setText("");
+            try{
+                MyMessage m = new MyMessage();
+                m.sender = CURRENT_USER;
+                m.receiver = lblReceiver.getText();
+                m.type = "chat";
+                m.content = s;
+                ChatClient client = new ChatClient();
+                MyMessage r = client.sendMessage(m);
+              
+     
+            }
+            catch(Exception e){
+                e.printStackTrace();
+            }finally{
+              
+            }
+        }
+        
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+           try{
+            MyMessage m = new MyMessage();
+            m.sender = CURRENT_USER;
+            m.receiver = "server";
+            m.type = "getmessages";
+            m.content = lblReceiver.getText();
+            ChatClient client = new ChatClient();
+            MyMessage r = client.sendMessage(m);
+            JOptionPane.showMessageDialog(rootPane, r.content);
+            ObjectMapper mapper = new ObjectMapper();
+            ArrayList<String> b = mapper.readValue(r.content, ArrayList.class);
+            for (String s:b){
+
+                                content +=  "<font color=green >" + lblReceiver.getText()  + ":   "+s + " </font> </br><br>";
+                   txtChatContent1.setText(content);
+            }
+            
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -185,15 +324,18 @@ public class ChatFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JList<String> jList1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JLabel lblReceiver;
     private javax.swing.JLabel lblUsername;
+    private javax.swing.JList<String> lstFriends;
+    private javax.swing.JTextField txtChat;
+    private javax.swing.JEditorPane txtChatContent1;
     // End of variables declaration//GEN-END:variables
 }
+ 
