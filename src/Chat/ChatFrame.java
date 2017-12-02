@@ -20,8 +20,6 @@ import org.codehaus.jackson.map.ObjectMapper;
 public class ChatFrame extends javax.swing.JFrame {
 
      public  String content="";
-     public String contentt="";
-     public boolean kiemtra =false;
      String selected="";
     public static String CURRENT_USER;
     final private DefaultListModel<String> friendListModel;
@@ -37,11 +35,8 @@ public class ChatFrame extends javax.swing.JFrame {
         lblUsername.setText(CURRENT_USER);
         getAndDisplayUser();
         autoGetMesage();
-          
-//         String aa="Hôm nay <font color=red>tôi</font> <br><font color = white style=\"background-color: blue\">đi học</font></br> ";
-//           
-       txtChatContent1.setContentType("text/html");
-//      txtChatContent1.setText(aa); 
+              
+       txtChatContent1.setContentType("text/html");// JEditorPane
     }
     
       
@@ -215,11 +210,7 @@ public class ChatFrame extends javax.swing.JFrame {
 
     private void lstFriendsValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_lstFriendsValueChanged
         
-         if(kiemtra){
-             kiemtra = false;
-         }else{
-             kiemtra = true;//gia tri chưa thay đổi
-         }
+        
         String s = lblReceiver.getText();
         String content1 = txtChatContent1.getText();
         
@@ -234,6 +225,13 @@ public class ChatFrame extends javax.swing.JFrame {
             lblReceiver.setText(selected);
             content1 = mapChatContent.get(selected);
             txtChatContent1.setText(content1);
+              String t1 = txtChatContent1.getText().replace("<head>", "");
+              String t2 = t1.replace("</head>","");
+              String t3 = t2.replace("<body>","");
+              String t4 = t3.replace("</body>","");
+              String t5 = t4.replace("</html>","");
+              content = t5.trim();
+            
 
                     
         }
@@ -245,24 +243,9 @@ public class ChatFrame extends javax.swing.JFrame {
        
         String s = txtChat.getText().trim();
         if (s.length() > 0){
-
-         if(kiemtra){
+   
                content += "<font color=blue >" +CURRENT_USER + " : " + s+"</font></br><br>" ;
-                     JOptionPane.showMessageDialog(rootPane, content +" 1");
-       
-           
-                
-         }else{
-                  String t1 = txtChatContent1.getText().replace("<head>", "");
-                  String t2 = t1.replace("</head>","");
-                  String t3 = t2.replace("<body>","");
-                  String t4 = t3.replace("</body>","");
-                  String t5 = t4.replace("</html>","");
-              content = t5.trim();
-             content += "<font color=blue >" +CURRENT_USER + " : " + s+"</font></br><br>" ;
-        JOptionPane.showMessageDialog(rootPane, content +" 2");
-         }
-        
+//                   JOptionPane.showMessageDialog(rootPane, content +" 1");
             
 
             txtChatContent1.setText(content);
@@ -289,9 +272,6 @@ public class ChatFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     public void autoGetMesage(){
-        if(kiemtra){
-            contentt="";
-        }
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
