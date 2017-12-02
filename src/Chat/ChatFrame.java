@@ -26,7 +26,7 @@ public class ChatFrame extends javax.swing.JFrame {
     final private HashMap<String,String> mapChatContent;
     public ChatFrame() {
            this.setResizable(false);
-  
+     
         friendListModel = new DefaultListModel<>();
         mapChatContent = new HashMap<>();
         initComponents();
@@ -90,7 +90,7 @@ public class ChatFrame extends javax.swing.JFrame {
         txtChat = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
         lblUsername = new javax.swing.JLabel();
-        jButton2 = new javax.swing.JButton();
+        btnLogout = new javax.swing.JButton();
         lblReceiver = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         txtChatContent1 = new javax.swing.JEditorPane();
@@ -133,8 +133,13 @@ public class ChatFrame extends javax.swing.JFrame {
         lblUsername.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         lblUsername.setText("user");
 
-        jButton2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jButton2.setText("Logout");
+        btnLogout.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        btnLogout.setText("Logout");
+        btnLogout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLogoutActionPerformed(evt);
+            }
+        });
 
         lblReceiver.setText("jLabel5");
 
@@ -172,7 +177,7 @@ public class ChatFrame extends javax.swing.JFrame {
                                         .addGap(0, 0, Short.MAX_VALUE)
                                         .addComponent(lblUsername, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addComponent(btnLogout, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                 .addGap(30, 30, 30))
                             .addComponent(lblReceiver)
                             .addComponent(jScrollPane3))))
@@ -183,7 +188,7 @@ public class ChatFrame extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(16, 16, 16)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnLogout, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblUsername))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel1)
@@ -271,6 +276,12 @@ public class ChatFrame extends javax.swing.JFrame {
         
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
+       this.dispose();
+       
+       new LoginFrame().setVisible(true);
+    }//GEN-LAST:event_btnLogoutActionPerformed
+
     public void autoGetMesage(){
         Thread thread = new Thread(new Runnable() {
             @Override
@@ -299,6 +310,7 @@ public class ChatFrame extends javax.swing.JFrame {
         }
         catch(Exception e){
             e.printStackTrace();
+            
         }
                }
             }
@@ -342,8 +354,8 @@ public class ChatFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnLogout;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
