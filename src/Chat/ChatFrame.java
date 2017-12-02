@@ -25,7 +25,7 @@ public class ChatFrame extends javax.swing.JFrame {
     final private HashMap<String,String> mapChatContent;
     public ChatFrame() {
            this.setResizable(false);
-      
+  
         friendListModel = new DefaultListModel<>();
         mapChatContent = new HashMap<>();
         initComponents();
@@ -33,6 +33,7 @@ public class ChatFrame extends javax.swing.JFrame {
         CURRENT_USER = LoginFrame.USER_NAME;
         lblUsername.setText(CURRENT_USER);
         getAndDisplayUser();
+        autoGetMesage();
           
 //         String aa="Hôm nay <font color=red>tôi</font> <br><font color = white style=\"background-color: blue\">đi học</font></br> ";
 //           
@@ -93,7 +94,6 @@ public class ChatFrame extends javax.swing.JFrame {
         lblUsername = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
         lblReceiver = new javax.swing.JLabel();
-        jButton3 = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
         txtChatContent1 = new javax.swing.JEditorPane();
 
@@ -140,13 +140,6 @@ public class ChatFrame extends javax.swing.JFrame {
 
         lblReceiver.setText("jLabel5");
 
-        jButton3.setText("Receive ");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
-            }
-        });
-
         jScrollPane3.setViewportView(txtChatContent1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -165,11 +158,9 @@ public class ChatFrame extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(txtChat, javax.swing.GroupLayout.PREFERRED_SIZE, 251, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton3))
+                        .addComponent(txtChat, javax.swing.GroupLayout.PREFERRED_SIZE, 308, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(29, 29, 29)
@@ -207,13 +198,12 @@ public class ChatFrame extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 177, Short.MAX_VALUE)
                     .addComponent(jScrollPane3))
-                .addGap(18, 20, Short.MAX_VALUE)
+                .addGap(18, 22, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(txtChat, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(30, 30, 30))
         );
 
@@ -262,8 +252,14 @@ public class ChatFrame extends javax.swing.JFrame {
         
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-           try{
+    public void autoGetMesage(){
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+               while(true){
+                 
+                     try{
+                           Thread.sleep(1000);
             MyMessage m = new MyMessage();
             m.sender = CURRENT_USER;
             m.receiver = "server";
@@ -271,7 +267,7 @@ public class ChatFrame extends javax.swing.JFrame {
             m.content = lblReceiver.getText();
             ChatClient client = new ChatClient();
             MyMessage r = client.sendMessage(m);
-            JOptionPane.showMessageDialog(rootPane, r.content);
+            
             ObjectMapper mapper = new ObjectMapper();
             ArrayList<String> b = mapper.readValue(r.content, ArrayList.class);
             for (String s:b){
@@ -284,8 +280,12 @@ public class ChatFrame extends javax.swing.JFrame {
         catch(Exception e){
             e.printStackTrace();
         }
-    }//GEN-LAST:event_jButton3ActionPerformed
-
+               }
+            }
+        });
+        thread.start();
+          
+    }
     /**
      * @param args the command line arguments
      */
@@ -324,7 +324,6 @@ public class ChatFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
