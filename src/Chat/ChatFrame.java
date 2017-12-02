@@ -5,7 +5,7 @@
  */
 package Chat;
 
-import static Chat.ChatFrame1.CURRENT_USER;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import javax.swing.DefaultListModel;
@@ -259,7 +259,7 @@ public class ChatFrame extends javax.swing.JFrame {
                while(true){
                  
                      try{
-                           Thread.sleep(1000);
+            Thread.sleep(1000);
             MyMessage m = new MyMessage();
             m.sender = CURRENT_USER;
             m.receiver = "server";
